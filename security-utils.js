@@ -219,7 +219,18 @@ function protectConsole() {
     };
 }
 
-// Exportar funções se estiver em ambiente de módulo
+// Exportações ES6
+export {
+    getSecureConfig,
+    protectSensitiveData,
+    maskString,
+    secureLog,
+    isSafeRedirectUrl,
+    sanitizeInput,
+    protectConsole
+};
+
+// Exportar para compatibilidade CommonJS
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         getSecureConfig,
