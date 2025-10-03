@@ -219,30 +219,6 @@ function protectConsole() {
     };
 }
 
-// Exportações ES6
-export {
-    getSecureConfig,
-    protectSensitiveData,
-    maskString,
-    secureLog,
-    isSafeRedirectUrl,
-    sanitizeInput,
-    protectConsole
-};
-
-// Exportar para compatibilidade CommonJS
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        getSecureConfig,
-        protectSensitiveData,
-        maskString,
-        secureLog,
-        isSafeRedirectUrl,
-        sanitizeInput,
-        protectConsole
-    };
-}
-
 // Se estiver no navegador, adicionar ao objeto global
 if (typeof window !== 'undefined') {
     window.SecurityUtils = {
@@ -255,3 +231,14 @@ if (typeof window !== 'undefined') {
         protectConsole
     };
 }
+
+// Exportações ES6
+export {
+    getSecureConfig,
+    protectSensitiveData,
+    maskString,
+    secureLog,
+    isSafeRedirectUrl,
+    sanitizeInput,
+    protectConsole
+};

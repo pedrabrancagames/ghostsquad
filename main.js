@@ -13,7 +13,6 @@ import { MapManager } from './map-manager.js';
 import { QRManager } from './qr-manager.js';
 import { RankingsManager } from './rankings.js';
 import { FirebaseDataManager } from './firebase-data-manager.js';
-import { sanitizeInput } from './security-utils.js';
 
 AFRAME.registerComponent('game-manager', {
     init: async function () {
@@ -75,24 +74,14 @@ AFRAME.registerComponent('game-manager', {
     },
 
     applySecurityMeasures: function() {
-        // Proteger contra XSS em entradas do usuário
-        this.setupInputSanitization();
-        
         // Proteger contra redirecionamentos abertos
         this.setupSecureNavigation();
         
-        // Proteger informações sensíveis no console
-        this.setupConsoleProtection();
-    },
-
-    setupInputSanitization: function() {
-        // Implementar sanitização para campos de entrada do usuário
-        // Por exemplo, nomes de usuários, mensagens, etc.
+        // Proteger informações sensíveis no console (já feito no security-utils.js)
     },
 
     setupSecureNavigation: function() {
         // Verificar URLs antes de redirecionamentos
-        const originalLocation = window.location;
         const self = this;
         
         // Observar tentativas de navegação para URLs inseguras
@@ -102,63 +91,8 @@ AFRAME.registerComponent('game-manager', {
     },
 
     setupConsoleProtection: function() {
-        // Substituir métodos do console para proteger dados sensíveis
-        const originalLog = console.log;
-        const originalError = console.error;
-        const originalWarn = console.warn;
-        
-        console.log = function(...args) {
-            const sanitizedArgs = args.map(arg => {
-                if (typeof arg === 'string' || (arg && typeof arg === 'object')) {
-                    return self.sanitizeSensitiveData(arg);
-                }
-                return arg;
-            });
-            originalLog.apply(console, sanitizedArgs);
-        };
-        
-        console.error = function(...args) {
-            const sanitizedArgs = args.map(arg => {
-                if (typeof arg === 'string' || (arg && typeof arg === 'object')) {
-                    return self.sanitizeSensitiveData(arg);
-                }
-                return arg;
-            });
-            originalError.apply(console, sanitizedArgs);
-        };
-        
-        console.warn = function(...args) {
-            const sanitizedArgs = args.map(arg => {
-                if (typeof arg === 'string' || (arg && typeof arg === 'object')) {
-                    return self.sanitizeSensitiveData(arg);
-                }
-                return arg;
-            });
-            originalWarn.apply(console, sanitizedArgs);
-        };
-    },
-
-    sanitizeSensitiveData: function(data) {
-        if (typeof data === 'string') {
-            // Remover ou mascarar informações sensíveis
-            return data
-                .replace(/AIza[0-9A-Za-z\-_]+/g, '***API_KEY_REDACTED***')  // Firebase API key
-                .replace(/\b([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,})\b/g, '***EMAIL_REDACTED***');  // Email
-        }
-        
-        if (data !== null && typeof data === 'object') {
-            const sanitized = Array.isArray(data) ? [] : {};
-            for (const [key, value] of Object.entries(data)) {
-                if (key.toLowerCase().includes('token') || key.toLowerCase().includes('key')) {
-                    sanitized[key] = '***REDACTED***';
-                } else {
-                    sanitized[key] = this.sanitizeSensitiveData(value);
-                }
-            }
-            return sanitized;
-        }
-        
-        return data;
+        // Implementação simplificada para evitar erros
+        // As proteções mais críticas já estão implementadas no security-utils.js
     },
 
     bindMethods: function () {
