@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - Ghost Squad</title>
+    <link rel="stylesheet" href="admin-style.css">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Painel Administrativo - Ghost Squad</h1>
+        </header>
+        
+        <nav id="main-nav" class="main-nav" style="display: none;">
+            <ul class="nav-list">
+                <li class="nav-item active">
+                    <a href="#dashboard" class="nav-link">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-label">Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#users" class="nav-link">
+                        <span class="nav-icon">👥</span>
+                        <span class="nav-label">Usuários</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#ghosts" class="nav-link">
+                        <span class="nav-icon">👻</span>
+                        <span class="nav-label">Fantasmas</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#events" class="nav-link">
+                        <span class="nav-icon">📅</span>
+                        <span class="nav-label">Eventos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#reports" class="nav-link">
+                        <span class="nav-icon">📈</span>
+                        <span class="nav-label">Relatórios</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#settings" class="nav-link">
+                        <span class="nav-icon">⚙️</span>
+                        <span class="nav-label">Configurações</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#locations" class="nav-link">
+                        <span class="nav-icon">📍</span>
+                        <span class="nav-label">Localizações</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#logs" class="nav-link">
+                        <span class="nav-icon">📝</span>
+                        <span class="nav-label">Logs</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#system-logs" class="nav-link">
+                        <span class="nav-icon">⚠️</span>
+                        <span class="nav-label">Sistema</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        
+        <main id="main-content">
+                <div id="login-section" class="section">
+                    <h2>Login Administrativo</h2>
+                    <button id="google-login-btn">Login com Google</button>
+                    <div id="login-error" class="error-message" style="display: none;"></div>
+                </div>
+            
+            <div id="dashboard-section" class="section" style="display: none;">
+                <div class="dashboard-header">
+                    <h2>Dashboard</h2>
+                    <button id="logout-btn" class="btn-secondary">Sair</button>
+                </div>
+                <div id="dashboard-content"></div>
+            </div>
+            
+            <div id="users-section" class="section" style="display: none;">
+                <div class="dashboard-header">
+                    <h2>Gerenciamento de Usuários</h2>
+                    <button id="back-to-dashboard-users" class="btn-secondary">Voltar ao Dashboard</button>
+                </div>
+                <div id="users-content"></div>
+            </div>
+            
+            <div id="user-detail-section" class="section" style="display: none;">
+                <div class="dashboard-header">
+                    <h2>Detalhes do Usuário</h2>
+                    <button id="back-to-users" class="btn-secondary">Voltar para Lista</button>
+                </div>
+                <div id="user-detail-content"></div>
+            </div>
+
+            <div id="ghosts-section" class="section" style="display: none;">
+                <div class="dashboard-header">
+                    <h2>Gerenciamento de Fantasmas</h2>
+                    <button id="back-to-dashboard-ghosts" class="btn-secondary">Voltar ao Dashboard</button>
+                </div>
+                <div id="ghosts-content"></div>
+            </div>
+
+            <div id="events-section" class="section" style="display: none;">
+                <div class="dashboard-header">
+                    <h2>Gerenciamento de Eventos</h2>
+                    <button id="back-to-dashboard-events" class="btn-secondary">Voltar ao Dashboard</button>
+                </div>
+                <div id="events-content"></div>
+            </div>
+            
+            <div id="reports-section" class="section" style="display: none;">
+                <div class="dashboard-header">
+                    <h2>Relatórios e Estatísticas</h2>
+                    <button id="back-to-dashboard-reports" class="btn-secondary">Voltar ao Dashboard</button>
+                </div>
+                <div id="reports-content"></div>
+            </div>
+            
+            <div id="settings-section" class="section" style="display: none;">
+                <div class="dashboard-header">
+                    <h2>Configurações do Jogo</h2>
+                    <button id="back-to-dashboard-settings" class="btn-secondary">Voltar ao Dashboard</button>
+                </div>
+                <div id="settings-content"></div>
+            </div>
+            
+            <div id="locations-section" class="section" style="display: none;">
+                <div class="dashboard-header">
+                    <h2>Gerenciamento de Localizações</h2>
+                    <button id="back-to-dashboard-locations" class="btn-secondary">Voltar ao Dashboard</button>
+                </div>
+                <div id="locations-content"></div>
+            </div>
+            
+            <div id="logs-section" class="section" style="display: none;">
+                <div class="dashboard-header">
+                    <h2>Logs e Auditoria</h2>
+                    <button id="back-to-dashboard-logs" class="btn-secondary">Voltar ao Dashboard</button>
+                </div>
+                <div id="logs-content"></div>
+            </div>
+            
+            <div id="system-logs-section" class="section" style="display: none;">
+                <div class="dashboard-header">
+                    <h2>Logs do Sistema</h2>
+                    <button id="back-to-dashboard-system-logs" class="btn-secondary">Voltar ao Dashboard</button>
+                </div>
+                <div id="system-logs-content"></div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>&copy; 2025 Ghost Squad - Painel Administrativo</p>
+        </footer>
+    </div>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
+    
+    <!-- Arquivo de configuração do Firebase -->
+    <script src="firebase-config.js"></script>
+    
+    <!-- Módulos da aplicação -->
+    <script src="admin-main.js" type="module"></script>
+</body>
+</html>

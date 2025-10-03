@@ -1,0 +1,1417 @@
+/* Estilos Gerais */
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Arial', sans-serif;
+    background-color: #000;
+    color: #fff;
+}
+
+/* Contêiner principal da UI que permite cliques passarem por ele */
+#ui-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.ui-element {
+    pointer-events: auto; /* Elementos com esta classe são clicáveis */
+}
+
+.ui-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s ease-out, transform 0.5s ease;
+    padding: 20px;
+    box-sizing: border-box;
+    pointer-events: auto; /* Telas cheias devem ser clicáveis */
+    z-index: 2; /* Garante que a UI fique sobre o canvas de fundo */
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.ui-screen.fade-out {
+    opacity: 0;
+    transform: scale(0.95);
+}
+
+.ui-screen.slide-in {
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hidden {
+    display: none !important; /* Regra forte para garantir que o elemento seja escondido */
+}
+
+#logo {
+    width: 80%;
+    max-width: 350px;
+    margin-bottom: 40px;
+    filter: drop-shadow(0 0 10px rgba(146, 244, 40, 0.3));
+    animation: logoGlow 3s ease-in-out infinite alternate, logoEntrance 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    opacity: 0;
+    transform: translateY(-30px) scale(0.8);
+}
+
+@keyframes logoEntrance {
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes logoGlow {
+    from {
+        filter: drop-shadow(0 0 5px rgba(146, 244, 40, 0.2));
+    }
+    to {
+        filter: drop-shadow(0 0 20px rgba(146, 244, 40, 0.5));
+    }
+}
+
+#loading-info, #location-info-text, #distance-info {
+    font-size: 1em;
+    color: #ccc;
+    text-align: center;
+    margin-top: 20px;
+    height: 20px;
+}
+
+#version-info {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    color: #666;
+    font-size: 0.9em;
+    opacity: 0.7;
+}
+
+.action-button {
+    display: none; 
+    margin-top: 20px;
+    padding: 12px 25px;
+    font-size: 1.1em;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+#google-login-button {
+    background-color: #4285F4;
+    color: #fff;
+}
+        
+#enter-button, #deposit-button {
+    color: #000;
+    background-color: #92F428;
+}
+
+#enter-button:disabled {
+    background-color: #555;
+    color: #888;
+    cursor: not-allowed;
+}
+
+/* Tela de Login */
+#login-screen {
+    /* Usa o mesmo fundo gradiente das outras telas */
+}
+
+#auth-buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 350px;
+    animation: buttonsEntrance 0.8s ease-out 0.3s forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+@keyframes buttonsEntrance {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.auth-button {
+    padding: 15px;
+    background-color: #333;
+    border: 2px solid #555;
+    color: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    text-align: center;
+    font-size: 1.1em;
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(146, 244, 40, 0.2), transparent);
+    transition: 0.5s;
+}
+
+.auth-button:hover::before {
+    left: 100%;
+}
+
+.auth-button:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    border-color: #92F428;
+}
+
+#google-login-button {
+    background: linear-gradient(45deg, #4285F4, #3465a4);
+    border-color: #4285F4;
+}
+
+#google-login-button:hover {
+    background: linear-gradient(45deg, #3465a4, #4285F4);
+}
+
+#email-login-show-button {
+    background: linear-gradient(45deg, #333, #444);
+}
+
+#anonymous-login-button {
+    background: linear-gradient(45deg, #555, #666);
+}
+
+.auth-button.loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.auth-button.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    width: 20px;
+    height: 20px;
+    margin-top: -10px;
+    border: 2px solid transparent;
+    border-top: 2px solid #92F428;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#email-login-screen {
+    background: rgba(10, 10, 10, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    max-width: 400px;
+    width: 90%;
+    margin: auto;
+}
+
+#email-login-screen h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #92F428;
+    font-size: 1.8em;
+    text-shadow: 0 0 10px rgba(146, 244, 40, 0.3);
+}
+
+#logo-small {
+    width: 150px;
+    margin-bottom: 20px;
+}
+
+.input-group {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 15px;
+    font-size: 1em;
+    border-radius: 8px;
+    border: 2px solid #333;
+    background-color: rgba(30, 30, 30, 0.8);
+    color: #fff;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+    border-color: #92F428;
+    box-shadow: 0 0 15px rgba(146, 244, 40, 0.3);
+    outline: none;
+}
+
+.input-group input::placeholder {
+    color: #666;
+}
+
+.error-text {
+    color: #ff4444;
+    height: 20px;
+    margin-bottom: 10px;
+}
+
+#email-auth-buttons-container {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+#email-login-button, #email-signup-button {
+    flex: 1;
+    padding: 14px;
+    font-size: 1.1em;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#email-login-button {
+    background: linear-gradient(45deg, #4CAF50, #8BC34A);
+    color: #000;
+}
+
+#email-signup-button {
+    background: linear-gradient(45deg, #2196F3, #03DAC6);
+    color: #fff;
+}
+
+#email-login-button:hover, #email-signup-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.text-button {
+    margin-top: 20px;
+    background: none;
+    border: none;
+    color: #92F428;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: all 0.2s ease;
+}
+
+.text-button:hover {
+    color: #fff;
+    text-shadow: 0 0 10px rgba(146, 244, 40, 0.5);
+}
+
+
+/* Tela de Seleção de Local */
+#location-buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 350px;
+}
+
+.location-button {
+    padding: 15px;
+    background-color: #333;
+    border: 2px solid #555;
+    color: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.location-button.selected {
+    border-color: #92F428;
+    background-color: rgba(146, 244, 40, 0.2);
+    transform: scale(1.05);
+}
+
+/* UI Principal do Jogo */
+#game-ui {
+    pointer-events: none; /* O container em si não é clicável */
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+}
+
+#game-logo {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 100px;
+    z-index: 15;
+    opacity: 0.8;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+#inventory-icon-container {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 25;
+    cursor: pointer;
+}
+
+#inventory-icon {
+    width: 115px; /* Aumentado */
+}
+
+#inventory-badge {
+    position: absolute;
+    bottom: 5px;
+    right: 0px;
+    background-color: #ff0000;
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8em;
+    font-weight: bold;
+    border: 2px solid white;
+}
+
+#proton-pack-icon {
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    width: 140px; /* Aumentado */
+    z-index: 15;
+    pointer-events: auto; /* Agora é clicável */
+}
+
+#proton-pack-progress-bar {
+    position: fixed;
+    top: 50%; /* Centraliza verticalmente */
+    transform: translateY(-50%); /* Ajusta para o centro exato */
+    right: 10px; /* Mais próximo da borda */
+    width: 10px; /* Vertical */
+    height: 110px; /* Altura do ícone do proton pack */
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid #92F428;
+    border-radius: 5px;
+    overflow: hidden;
+    display: none; /* Escondido por padrão */
+    z-index: 16; /* Acima do ícone */
+}
+#proton-pack-progress-fill {
+    width: 100%; /* Preenche a largura */
+    height: 0%; /* Começa vazio na vertical */
+    background: linear-gradient(to top, #92F428, #4CAF50);
+    transition: height 0.1s linear; /* Transição na altura */
+    position: absolute; /* Para preencher de baixo para cima */
+    bottom: 0; /* Preenche de baixo para cima */
+    left: 0;
+}
+
+/* Animações personalizadas do Proton Pack */
+.proton-pack-charging {
+    animation: proton-pack-pulse 2s ease-in-out infinite;
+}
+
+.proton-pack-pulse {
+    animation: proton-pack-pulse 0.5s ease-in-out infinite;
+}
+
+@keyframes proton-pack-pulse {
+    0% { 
+        filter: brightness(1) drop-shadow(0 0 5px rgba(146, 244, 40, 0.5));
+        transform: scale(1);
+    }
+    50% { 
+        filter: brightness(1.3) drop-shadow(0 0 15px rgba(146, 244, 40, 0.8));
+        transform: scale(1.05);
+    }
+    100% { 
+        filter: brightness(1) drop-shadow(0 0 5px rgba(146, 244, 40, 0.5));
+        transform: scale(1);
+    }
+}
+
+#capture-button {
+    /* Este botão foi removido do HTML */
+    display: none;
+}
+
+/* ===== EFEITOS VISUAIS ESPECIAIS ===== */
+
+/* Canvas para efeitos visuais */
+#effects-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    background: transparent;
+}
+
+/* Efeitos de Captura de Fantasma */
+.ghost-capture-effect {
+    animation: ghost-capture-glow 1s ease-out;
+}
+
+@keyframes ghost-capture-glow {
+    0% { 
+        filter: brightness(1) drop-shadow(0 0 0px rgba(146, 244, 40, 0));
+        transform: scale(1);
+    }
+    50% { 
+        filter: brightness(1.8) drop-shadow(0 0 20px rgba(146, 244, 40, 0.8));
+        transform: scale(1.1);
+    }
+    100% { 
+        filter: brightness(1) drop-shadow(0 0 0px rgba(146, 244, 40, 0));
+        transform: scale(1);
+    }
+}
+
+/* Efeitos de Sucção */
+.suction-effect {
+    animation: suction-animation 1s ease-out forwards;
+}
+
+@keyframes suction-animation {
+    0% { 
+        transform: scale(1) rotate(0deg);
+        filter: brightness(1) hue-rotate(0deg);
+    }
+    25% { 
+        transform: scale(0.95) rotate(90deg);
+        filter: brightness(1.2) hue-rotate(45deg);
+    }
+    50% { 
+        transform: scale(0.9) rotate(180deg);
+        filter: brightness(1.4) hue-rotate(90deg);
+    }
+    75% { 
+        transform: scale(0.85) rotate(270deg);
+        filter: brightness(1.6) hue-rotate(135deg);
+    }
+    100% { 
+        transform: scale(0.7) rotate(360deg);
+        filter: brightness(1.8) hue-rotate(180deg);
+        opacity: 0.8;
+    }
+}
+
+/* Efeitos de Celebração */
+.celebration-bounce {
+    animation: celebration-bounce-effect 0.6s ease-out;
+}
+
+@keyframes celebration-bounce-effect {
+    0% { transform: scale(1) translateY(0); }
+    25% { transform: scale(1.15) translateY(-15px); }
+    50% { transform: scale(1.25) translateY(-25px); }
+    75% { transform: scale(1.15) translateY(-15px); }
+    100% { transform: scale(1) translateY(0); }
+}
+
+/* Efeitos de Proton Pack */
+.proton-pack-charging {
+    animation: proton-pack-charge-effect 2s ease-in-out infinite;
+}
+
+@keyframes proton-pack-charge-effect {
+    0% { 
+        filter: brightness(1) drop-shadow(0 0 5px rgba(146, 244, 40, 0.3));
+        transform: scale(1);
+    }
+    50% { 
+        filter: brightness(1.3) drop-shadow(0 0 15px rgba(146, 244, 40, 0.7));
+        transform: scale(1.05);
+    }
+    100% { 
+        filter: brightness(1) drop-shadow(0 0 5px rgba(146, 244, 40, 0.3));
+        transform: scale(1);
+    }
+}
+
+.proton-pack-firing {
+    animation: proton-pack-fire-effect 0.1s ease-in-out infinite;
+}
+
+@keyframes proton-pack-fire-effect {
+    0% { 
+        filter: brightness(1) drop-shadow(0 0 10px rgba(146, 244, 40, 0.6));
+        transform: scale(1) rotate(0deg);
+    }
+    25% { 
+        filter: brightness(1.4) drop-shadow(0 0 20px rgba(146, 244, 40, 0.9));
+        transform: scale(1.02) rotate(1deg);
+    }
+    50% { 
+        filter: brightness(1.7) drop-shadow(0 0 30px rgba(146, 244, 40, 1));
+        transform: scale(1.05) rotate(-1deg);
+    }
+    75% { 
+        filter: brightness(1.4) drop-shadow(0 0 20px rgba(146, 244, 40, 0.9));
+        transform: scale(1.02) rotate(0.5deg);
+    }
+    100% { 
+        filter: brightness(1) drop-shadow(0 0 10px rgba(146, 244, 40, 0.6));
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+/* Efeitos de Inventário */
+.inventory-full-warning {
+    animation: inventory-warning-shake 0.5s ease-in-out 3;
+}
+
+@keyframes inventory-warning-shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-3px); }
+    100% { transform: translateX(0); }
+}
+
+.inventory-glow {
+    animation: inventory-glow-effect 2s ease-in-out infinite;
+}
+
+@keyframes inventory-glow-effect {
+    0% { 
+        filter: drop-shadow(0 0 5px rgba(255, 193, 7, 0.5));
+    }
+    50% { 
+        filter: drop-shadow(0 0 20px rgba(255, 193, 7, 0.8)) drop-shadow(0 0 30px rgba(255, 193, 7, 0.4));
+    }
+    100% { 
+        filter: drop-shadow(0 0 5px rgba(255, 193, 7, 0.5));
+    }
+}
+
+/* Estilos para o badge do inventário quando cheio */
+#inventory-badge {
+    position: absolute;
+    bottom: 5px;
+    right: 0px;
+    background-color: #ff0000;
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8em;
+    font-weight: bold;
+    border: 2px solid white;
+    transition: all 0.3s ease;
+    animation: badge-pulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes badge-pulse {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.1); }
+}
+
+/* Efeitos de Ecto-1 */
+.ecto1-arrival {
+    animation: ecto1-drive-in-effect 1.5s ease-out;
+}
+
+@keyframes ecto1-drive-in-effect {
+    0% { 
+        transform: translateX(-100%) scale(0.8);
+        opacity: 0;
+        filter: blur(2px);
+    }
+    50% { 
+        transform: translateX(10px) scale(1.1);
+        opacity: 0.8;
+        filter: blur(1px);
+    }
+    100% { 
+        transform: translateX(0) scale(1);
+        opacity: 1;
+        filter: blur(0px);
+    }
+}
+
+.ecto1-honk {
+    animation: ecto1-honk-effect 0.3s ease-out;
+}
+
+@keyframes ecto1-honk-effect {
+    0% { 
+        transform: scale(1);
+        filter: brightness(1) drop-shadow(0 0 0px rgba(255, 215, 0, 0));
+    }
+    50% { 
+        transform: scale(1.15);
+        filter: brightness(1.4) drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
+    }
+    100% { 
+        transform: scale(1);
+        filter: brightness(1) drop-shadow(0 0 0px rgba(255, 215, 0, 0));
+    }
+}
+
+/* Efeitos de Erro */
+.error-effect {
+    animation: error-flash-shake 0.8s ease-in-out;
+}
+
+@keyframes error-flash-shake {
+    0% { 
+        background: rgba(244, 67, 54, 0);
+        transform: translateX(0);
+    }
+    15% { 
+        background: rgba(244, 67, 54, 0.3);
+        transform: translateX(-3px);
+    }
+    30% { 
+        background: rgba(244, 67, 54, 0.4);
+        transform: translateX(3px);
+    }
+    45% { 
+        background: rgba(244, 67, 54, 0.3);
+        transform: translateX(-2px);
+    }
+    60% { 
+        background: rgba(244, 67, 54, 0.2);
+        transform: translateX(2px);
+    }
+    75% { 
+        background: rgba(244, 67, 54, 0.1);
+        transform: translateX(-1px);
+    }
+    100% { 
+        background: rgba(244, 67, 54, 0);
+        transform: translateX(0);
+    }
+}
+
+/* Efeitos de Pulso Geral */
+.pulse-green {
+    animation: pulse-green-effect 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-green-effect {
+    0% { 
+        box-shadow: 0 0 5px rgba(146, 244, 40, 0.3);
+        transform: scale(1);
+    }
+    50% { 
+        box-shadow: 0 0 20px rgba(146, 244, 40, 0.7), 0 0 30px rgba(146, 244, 40, 0.4);
+        transform: scale(1.02);
+    }
+    100% { 
+        box-shadow: 0 0 5px rgba(146, 244, 40, 0.3);
+        transform: scale(1);
+    }
+}
+
+.pulse-blue {
+    animation: pulse-blue-effect 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-blue-effect {
+    0% { 
+        box-shadow: 0 0 5px rgba(33, 150, 243, 0.3);
+        transform: scale(1);
+    }
+    50% { 
+        box-shadow: 0 0 20px rgba(33, 150, 243, 0.7), 0 0 30px rgba(33, 150, 243, 0.4);
+        transform: scale(1.02);
+    }
+    100% { 
+        box-shadow: 0 0 5px rgba(33, 150, 243, 0.3);
+        transform: scale(1);
+    }
+}
+
+/* Efeitos de Transição Suave */
+.smooth-transition {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.elastic-transition {
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.bounce-transition {
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Estados de Hover Aprimorados */
+.ui-element:hover {
+    transform: translateY(-2px) scale(1.02);
+    filter: brightness(1.1);
+    transition: all 0.2s ease;
+}
+
+.action-button:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.location-button:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 5px 15px rgba(146, 244, 40, 0.3);
+    border-color: #92F428;
+    background-color: rgba(146, 244, 40, 0.1);
+}
+
+/* Efeitos de Carregamento */
+.loading-pulse {
+    animation: loading-pulse-effect 1.2s ease-in-out infinite;
+}
+
+@keyframes loading-pulse-effect {
+    0% { opacity: 0.4; }
+    50% { opacity: 1; }
+    100% { opacity: 0.4; }
+}
+
+.loading-spinner {
+    animation: loading-spin 1s linear infinite;
+}
+
+@keyframes loading-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Classes Utilitárias para Efeitos */
+.fade-in {
+    animation: fade-in-effect 0.6s ease-out;
+}
+
+@keyframes fade-in-effect {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-out {
+    animation: fade-out-effect 0.4s ease-in forwards;
+}
+
+@keyframes fade-out-effect {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-20px); }
+}
+
+.zoom-in {
+    animation: zoom-in-effect 0.4s ease-out;
+}
+
+@keyframes zoom-in-effect {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.zoom-out {
+    animation: zoom-out-effect 0.3s ease-in forwards;
+}
+
+@keyframes zoom-out-effect {
+    from { transform: scale(1); opacity: 1; }
+    to { transform: scale(0.8); opacity: 0; }
+}
+
+/* Responsivo para Efeitos Visuais */
+@media (max-width: 768px) {
+    .ghost-capture-effect,
+    .suction-effect,
+    .celebration-bounce {
+        animation-duration: 0.8s; /* Animações mais rápidas em mobile */
+    }
+    
+    .proton-pack-charging,
+    .proton-pack-firing {
+        animation-duration: 0.8s;
+    }
+    
+    .ecto1-arrival {
+        animation-duration: 1.2s;
+    }
+    
+    /* Reduzir intensidade dos efeitos em mobile para performance */
+    .pulse-green,
+    .pulse-blue,
+    .inventory-glow {
+        animation-duration: 2s;
+    }
+    
+    /* Hover effects mais sutis em mobile */
+    .ui-element:hover {
+        transform: translateY(-1px) scale(1.01);
+    }
+    
+    .action-button:hover {
+        transform: translateY(-2px) scale(1.02);
+    }
+    
+    .location-button:hover {
+        transform: translateY(-1px) scale(1.015);
+    }
+    
+    /* Responsividade aprimorada para a tela de login */
+    #login-screen {
+        padding: 15px;
+    }
+    
+    #logo {
+        width: 90%;
+        max-width: 250px;
+        margin-bottom: 30px;
+    }
+    
+    #auth-buttons-container {
+        max-width: 300px;
+        gap: 12px;
+    }
+    
+    .auth-button {
+        padding: 14px;
+        font-size: 1em;
+    }
+    
+    #loading-info {
+        font-size: 0.9em;
+        margin-top: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    #logo {
+        max-width: 200px;
+        margin-bottom: 25px;
+    }
+    
+    .auth-button {
+        padding: 12px;
+        font-size: 0.95em;
+    }
+    
+    #auth-buttons-container {
+        max-width: 280px;
+    }
+    
+    #email-login-screen {
+        padding: 20px;
+    }
+    
+    #email-login-screen h2 {
+        font-size: 1.5em;
+        margin-bottom: 20px;
+    }
+    
+    .input-group input {
+        padding: 12px;
+        font-size: 0.95em;
+    }
+    
+    #email-auth-buttons-container {
+        gap: 10px;
+        flex-direction: column;
+    }
+    
+    #email-login-button, #email-signup-button {
+        width: 100%;
+    }
+}
+
+/* Botão de teste de efeitos visuais */
+#test-effects-button, #test-effects-fallback {
+    touch-action: manipulation;
+    -webkit-touch-callout: default;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    will-change: transform;
+}
+
+#admin-link-container {
+    margin-top: 30px;
+    text-align: center;
+}
+
+#admin-link {
+    color: #92F428;
+    text-decoration: none;
+    font-size: 1em;
+    padding: 10px 20px;
+    border: 2px solid #92F428;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    background: rgba(146, 244, 40, 0.1);
+}
+
+#admin-link:hover {
+    background: rgba(146, 244, 40, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(146, 244, 40, 0.4);
+}
+
+#minimap.near-ghost {
+    animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+    50% {
+        box-shadow: 0 0 25px rgba(255, 0, 0, 0.8);
+        border-color: #ff0000;
+    }
+}
+
+#minimap {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 150px;
+    height: 150px;
+    background-color: rgba(0, 0, 0, 0.6);
+    border: 2px solid #92F428;
+    border-radius: 50%;
+    z-index: 20;
+    box-shadow: 0 0 15px rgba(146, 244, 40, 0.5);
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+}
+
+/* Modal do Inventário */
+#inventory-modal {
+    z-index: 30;
+}
+
+#inventory-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 400px;
+    background: #1a1a1a;
+    border: 2px solid #92F428;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(146, 244, 40, 0.5);
+    box-sizing: border-box;
+}
+
+#inventory-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #92F428;
+}
+
+#close-inventory-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5em;
+    cursor: pointer;
+}
+
+#ghost-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 15px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+#ghost-list li {
+    padding: 10px;
+    background: #333;
+    border-radius: 5px;
+    margin-bottom: 8px;
+}
+
+/* QR Scanner */
+#qr-scanner-screen {
+    background-color: #222;
+    z-index: 40;
+}
+#qr-reader {
+    width: 90%;
+    max-width: 500px;
+    border: 4px dashed #92F428;
+    border-radius: 10px;
+}
+#close-scanner-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 2em;
+    color: white;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+/* Janela de Notificação */
+#notification-modal {
+    z-index: 200; /* Garante que fique sobre todos os outros elementos */
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+#notification-content {
+    width: 90%;
+    max-width: 400px;
+    background: #1a1a1a;
+    border: 2px solid #92F428;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 0 20px rgba(146, 244, 40, 0.5);
+    text-align: center;
+}
+
+#notification-message {
+    margin: 0;
+    margin-bottom: 20px;
+    font-size: 1.1em;
+    line-height: 1.5;
+    white-space: pre-wrap; /* Para preservar quebras de linha */
+}
+
+#notification-close-button {
+    display: inline-block; /* Para que o botão apareça */
+    color: #000;
+    background-color: #92F428;
+}
+
+.a-enter-vr-button,
+.a-enter-ar-button {
+    display: none !important;
+}
+
+/* Estilos para marcadores do Leaflet */
+.ecto-marker, .player-marker, .ghost-marker {
+    text-align: center;
+    line-height: 30px; /* Ajustado para o tamanho da fonte */
+    text-shadow: 0 0 3px #000000;
+}
+
+/* Menu AR */
+.ar-menu {
+    position: fixed;
+    top: 100px;
+    left: 20px;
+    z-index: 30;
+}
+
+.ar-menu-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: rgba(26, 26, 26, 0.95);
+    border: 2px solid #92F428;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 0 20px rgba(146, 244, 40, 0.5);
+}
+
+.ar-menu-button {
+    padding: 12px 20px;
+    background-color: #333;
+    border: 2px solid #555;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    font-size: 1em;
+}
+
+.ar-menu-button:hover {
+    background-color: rgba(146, 244, 40, 0.2);
+    border-color: #92F428;
+    transform: translateY(-2px);
+}
+
+/* Modal de Rankings */
+#rankings-modal {
+    z-index: 50;
+}
+
+#rankings-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 400px;
+    background: #1a1a1a;
+    border: 2px solid #92F428;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(146, 244, 40, 0.5);
+    box-sizing: border-box;
+}
+
+#rankings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #92F428;
+}
+
+#close-rankings-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5em;
+    cursor: pointer;
+}
+
+#rankings-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#rankings-list li {
+    padding: 10px;
+    background: #333;
+    border-radius: 5px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#rankings-list li.current-user {
+    background: rgba(146, 244, 40, 0.2);
+    border: 1px solid #92F428;
+}
+
+.ranking-position {
+    font-weight: bold;
+    width: 30px;
+}
+
+.ranking-name {
+    flex-grow: 1;
+}
+
+.ranking-points {
+    font-weight: bold;
+    color: #92F428;
+}
+
+.ranking-captures {
+    font-size: 0.9em;
+    color: #aaa;
+}
+
+/* Modal de Perfil */
+#profile-modal {
+    z-index: 60;
+}
+
+#profile-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 400px;
+    background: #1a1a1a;
+    border: 2px solid #92F428;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(146, 244, 40, 0.5);
+    box-sizing: border-box;
+}
+
+#profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #92F428;
+}
+
+#close-profile-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5em;
+    cursor: pointer;
+}
+
+#profile-info {
+    margin-top: 15px;
+}
+
+.profile-field {
+    margin-bottom: 15px;
+}
+
+.profile-field label {
+    display: block;
+    margin-bottom: 5px;
+    color: #92F428;
+}
+
+.profile-field input {
+    width: 100%;
+    padding: 10px;
+    background: #333;
+    border: 1px solid #555;
+    border-radius: 5px;
+    color: white;
+    box-sizing: border-box;
+}
+
+.profile-field input:focus {
+    outline: none;
+    border-color: #92F428;
+    box-shadow: 0 0 10px rgba(146, 244, 40, 0.5);
+}
+
+#auth-options {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(146, 244, 40, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(146, 244, 40, 0.3);
+}
+
+#auth-options p {
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+#profile-google-login-button, #profile-email-signup-button {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#profile-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+#save-profile-button, #logout-button {
+    flex: 1;
+    margin: 0 5px;
+    display: block; /* Sobrescrever display: none da classe .action-button */
+    padding: 12px 25px;
+    font-size: 1.1em;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+#save-profile-button {
+    background-color: #92F428;
+    color: #000;
+}
+
+#logout-button {
+    background-color: #ff4444;
+    color: #fff;
+}
+
+/* Mensagens de erro e ausência de localizações */
+.no-locations-message,
+.error-message {
+    text-align: center;
+    padding: 20px;
+    color: #fff;
+    font-size: 16px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 8px;
+    margin: 10px;
+}
+
+.error-message {
+    color: #ff6b6b;
+    border: 1px solid #ff6b6b;
+}
+
+/* Estilos da Barra de Carregamento */
+#loading-bar-container {
+    width: 80%;
+    max-width: 350px;
+    height: 20px;
+    background-color: #333;
+    border-radius: 10px;
+    border: 2px solid #555;
+    margin-top: 20px;
+    overflow: hidden;
+}
+
+#loading-bar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #92F428, #4CAF50);
+    border-radius: 8px;
+    transition: width 0.5s ease-out;
+}

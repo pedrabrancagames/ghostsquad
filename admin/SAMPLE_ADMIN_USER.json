@@ -1,0 +1,15 @@
+{
+  "admins": {
+    "USER_UID_AQUI": {
+      "email": "admin@example.com",
+      "name": "Nome do Administrador",
+      "role": "admin",
+      "permissions": [
+        "users.manage",
+        "stats.view",
+        "config.edit"
+      ],
+      "createdAt": "2025-01-15T10:00:00Z"
+    }
+  }
+}
