@@ -25,7 +25,7 @@ export async function initSettings(element, configManager, adminAuth) {
         `;
         
         // Carregar configurações do jogo
-        const gameConfig = await configManager.getGameConfig();
+        const gameConfig = await configManager.getGameConfig(adminAuth);
         
         // Renderizar interface
         renderSettings(element, gameConfig);
@@ -168,7 +168,7 @@ function setupEventListeners(element, configManager, adminAuth) {
                 };
                 
                 // Atualizar configurações
-                await configManager.updateGameConfig(config);
+                await configManager.updateGameConfig(config, adminAuth);
                 
                 // Registrar ação no log de auditoria
                 const currentAdmin = adminAuth.getCurrentAdmin();
@@ -196,7 +196,7 @@ function setupEventListeners(element, configManager, adminAuth) {
             if (confirm('Tem certeza que deseja redefinir todas as configurações para os valores padrão?')) {
                 try {
                     const defaultConfig = configManager.getDefaultConfig();
-                    await configManager.updateGameConfig(defaultConfig);
+                    await configManager.updateGameConfig(defaultConfig, adminAuth);
                     
                     // Registrar ação no log de auditoria
                     const currentAdmin = adminAuth.getCurrentAdmin();
@@ -209,7 +209,7 @@ function setupEventListeners(element, configManager, adminAuth) {
                     }
                     
                     // Atualizar interface
-                    const gameConfig = await configManager.getGameConfig();
+                    const gameConfig = await configManager.getGameConfig(adminAuth);
                     renderSettings(element, gameConfig);
                     
                     showNotification('Configurações redefinidas para padrão!', 'success');
@@ -226,7 +226,7 @@ function setupEventListeners(element, configManager, adminAuth) {
     if (exportButton) {
         exportButton.addEventListener('click', async () => {
             try {
-                const configData = await configManager.exportConfig('json');
+                const configData = await configManager.exportConfig('json', adminAuth);
                 downloadFile(configData, 'configuracoes-ghost-squad.json', 'application/json');
                 
                 // Registrar ação no log de auditoria
@@ -268,7 +268,7 @@ function setupEventListeners(element, configManager, adminAuth) {
                         
                         // Confirmar importação
                         if (confirm('Tem certeza que deseja importar estas configurações? Isso substituirá as configurações atuais.')) {
-                            await configManager.importConfig(configData, 'json');
+                            await configManager.importConfig(configData, 'json', adminAuth);
                             
                             // Registrar ação no log de auditoria
                             const currentAdmin = adminAuth.getCurrentAdmin();
@@ -281,7 +281,7 @@ function setupEventListeners(element, configManager, adminAuth) {
                             }
                             
                             // Atualizar interface
-                            const gameConfig = await configManager.getGameConfig();
+                            const gameConfig = await configManager.getGameConfig(adminAuth);
                             renderSettings(element, gameConfig);
                             
                             showNotification('Configurações importadas com sucesso!', 'success');
@@ -308,7 +308,7 @@ function setupEventListeners(element, configManager, adminAuth) {
                 updateRankingsButton.textContent = 'Atualizando...';
                 
                 // Atualizar rankings
-                await configManager.updateRankings();
+                await configManager.updateRankings(adminAuth);
                 
                 // Registrar ação no log de auditoria
                 const currentAdmin = adminAuth.getCurrentAdmin();

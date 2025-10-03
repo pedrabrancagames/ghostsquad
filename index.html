@@ -76,7 +76,7 @@
                 <button id="anonymous-login-button" class="auth-button ui-element">Jogar como Visitante</button>
             </div>
             <div id="admin-link-container" class="hidden">
-                <a href="admin/" id="admin-link" class="text-button ui-element">Painel Administrativo</a>
+                <a href="#" id="admin-link" class="text-button ui-element" onclick="checkAdminAccess(); return false;">Painel Administrativo</a>
             </div>
             <div id="version-info">v1.0.0</div>
         </div>
@@ -163,6 +163,46 @@
     <script src="ar-debug.js"></script>
     
     <script type="module" src="main.js"></script>
+    <script src="security-utils.js"></script>
+    <script>
+        function checkAdminAccess() {
+            if (window.gameManager && window.gameManager.currentUser) {
+                // Verificar se o usuário é admin no Firebase
+                const adminRef = window.gameManager.database.ref(`admins/${window.gameManager.currentUser.uid}`);
+                adminRef.once('value').then((snapshot) => {
+                    if (snapshot.exists()) {
+                        // Validar URL de redirecionamento para segurança
+                        if (window.SecurityUtils.isSafeRedirectUrl('admin/')) {
+                            // Usuário é admin, permitir acesso
+                            window.location.href = 'admin/';
+                        } else {
+                            console.error('Tentativa de redirecionamento para URL insegura');
+                            alert('Erro de segurança: URL de destino inválida.');
+                        }
+                    } else {
+                        // Não é admin, mostrar mensagem de erro
+                        if (window.gameManager.showNotification) {
+                            window.gameManager.showNotification('Acesso negado. Apenas administradores podem acessar esta área.');
+                        } else {
+                            alert('Acesso negado. Apenas administradores podem acessar esta área.');
+                        }
+                    }
+                }).catch(error => {
+                    console.error('Erro ao verificar privilégios de admin:', error);
+                    alert('Erro ao verificar privilégios. Tente novamente mais tarde.');
+                });
+            } else {
+                alert('Faça login antes de acessar o painel administrativo.');
+            }
+        }
+        
+        // Aplicar proteções de segurança ao carregar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.SecurityUtils) {
+                window.SecurityUtils.protectConsole();
+            }
+        });
+    </script>
 </body>
 
 </html>

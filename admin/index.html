@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
     <title>Painel Administrativo - Ghost Squad</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="admin-style.css">
     <link rel="icon" href="../favicon.ico" type="image/x-icon">
 </head>
@@ -67,6 +67,12 @@
                     <a href="#system-logs" class="nav-link">
                         <span class="nav-icon">⚠️</span>
                         <span class="nav-label">Sistema</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#admin-management" class="nav-link">
+                        <span class="nav-icon">👥</span>
+                        <span class="nav-label">Admins</span>
                     </a>
                 </li>
             </ul>
@@ -158,6 +164,14 @@
                 </div>
                 <div id="system-logs-content"></div>
             </div>
+            
+            <div id="admin-management-section" class="section" style="display: none;">
+                <div class="dashboard-header">
+                    <h2>Gerenciamento de Administradores</h2>
+                    <button id="back-to-dashboard-admins" class="btn-secondary">Voltar ao Dashboard</button>
+                </div>
+                <div id="admin-management-content"></div>
+            </div>
         </main>
         
         <footer>
@@ -175,6 +189,15 @@
     <script src="firebase-config.js"></script>
     
     <!-- Módulos da aplicação -->
+    <script src="../security-utils.js"></script>
     <script src="admin-main.js" type="module"></script>
+    <script>
+        // Aplicar proteções de segurança ao carregar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.SecurityUtils) {
+                window.SecurityUtils.protectConsole();
+            }
+        });
+    </script>
 </body>
 </html>

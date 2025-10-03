@@ -4,6 +4,7 @@ import { UserManager } from './modules/user-manager.js';
 import { StatsManager } from './modules/stats-manager.js';
 import { ConfigManager } from './modules/config-manager.js';
 import { AuditManager } from './modules/audit-manager.js';
+import { RoleManager } from './modules/role-manager.js';
 import { initDashboard } from './components/dashboard.js';
 import { initUserList } from './components/user-list.js';
 import { initUserDetail } from './components/user-detail.js';
@@ -17,6 +18,7 @@ import { GhostManager } from './modules/ghost-manager.js';
 import { EventManager } from './modules/event-manager.js';
 import { initGhosts } from './components/ghosts.js';
 import { initEvents } from './components/events.js';
+import { initAdminManagement } from './components/admin-management.js';
 
 // Inicializando o Firebase
 const firebaseConfig = window.firebaseConfig;
@@ -32,6 +34,7 @@ const settingsSection = document.getElementById('settings-section');
 const locationsSection = document.getElementById('locations-section');
 const logsSection = document.getElementById('logs-section');
 const systemLogsSection = document.getElementById('system-logs-section');
+const adminManagementSection = document.getElementById('admin-management-section');
 const ghostsSection = document.getElementById('ghosts-section');
 const eventsSection = document.getElementById('events-section');
 const mainNav = document.getElementById('main-nav');
@@ -44,8 +47,11 @@ const userManager = new UserManager(firebase.database());
 const statsManager = new StatsManager(firebase.database());
 const configManager = new ConfigManager(firebase.database());
 const auditManager = new AuditManager(firebase.database());
+const roleManager = new RoleManager(firebase.database());
 const ghostManager = new GhostManager(firebase.database(), firebase.storage());
 const eventManager = new EventManager(firebase.database(), firebase.storage());
+
+let dashboardManager = null;
 
 let dashboardManager = null;
 
@@ -86,8 +92,39 @@ function showLogin() {
     loginError.style.display = 'none';
 }
 
+// Função para verificar e proteger rotas
+async function protectRoute() {
+    const user = adminAuth.auth.currentUser;
+    if (!user) {
+        showLogin();
+        return false;
+    }
+    
+    try {
+        const isAdmin = await adminAuth.checkAdminPrivileges(user);
+        if (!isAdmin) {
+            // Usuário autenticado, mas não é admin
+            adminAuth.logout();
+            showLogin();
+            showError('Acesso negado. Você não tem privilégios administrativos.');
+            return false;
+        }
+        return true;
+    } catch (error) {
+        console.error('Erro ao verificar privilégios:', error);
+        adminAuth.logout();
+        showLogin();
+        showError('Erro ao verificar privilégios. Por favor, faça login novamente.');
+        return false;
+    }
+}
+
 // Função para mostrar o dashboard
-function showDashboard() {
+async function showDashboard() {
+    // Verificar proteção de rota
+    const isAuthorized = await protectRoute();
+    if (!isAuthorized) return;
+    
     // Esconder todas as seções
     hideAllSections();
     
@@ -100,7 +137,11 @@ function showDashboard() {
 }
 
 // Função para mostrar a seção de usuários
-function showUsers() {
+async function showUsers() {
+    // Verificar proteção de rota
+    const isAuthorized = await protectRoute();
+    if (!isAuthorized) return;
+    
     // Esconder todas as seções
     hideAllSections();
     
@@ -113,7 +154,11 @@ function showUsers() {
 }
 
 // Função para mostrar a seção de detalhes do usuário
-function showUserDetail(userId) {
+async function showUserDetail(userId) {
+    // Verificar proteção de rota
+    const isAuthorized = await protectRoute();
+    if (!isAuthorized) return;
+    
     // Esconder todas as seções
     hideAllSections();
     
@@ -126,7 +171,11 @@ function showUserDetail(userId) {
 }
 
 // Função para mostrar a seção de relatórios
-function showReports() {
+async function showReports() {
+    // Verificar proteção de rota
+    const isAuthorized = await protectRoute();
+    if (!isAuthorized) return;
+    
     // Esconder todas as seções
     hideAllSections();
     
@@ -139,7 +188,11 @@ function showReports() {
 }
 
 // Função para mostrar a seção de configurações
-function showSettings() {
+async function showSettings() {
+    // Verificar proteção de rota
+    const isAuthorized = await protectRoute();
+    if (!isAuthorized) return;
+    
     // Esconder todas as seções
     hideAllSections();
     
@@ -152,7 +205,11 @@ function showSettings() {
 }
 
 // Função para mostrar a seção de localizações
-function showLocations() {
+async function showLocations() {
+    // Verificar proteção de rota
+    const isAuthorized = await protectRoute();
+    if (!isAuthorized) return;
+    
     // Esconder todas as seções
     hideAllSections();
     
@@ -165,7 +222,11 @@ function showLocations() {
 }
 
 // Função para mostrar a seção de logs
-function showLogs() {
+async function showLogs() {
+    // Verificar proteção de rota
+    const isAuthorized = await protectRoute();
+    if (!isAuthorized) return;
+    
     // Esconder todas as seções
     hideAllSections();
     
@@ -178,7 +239,11 @@ function showLogs() {
 }
 
 // Função para mostrar a seção de logs do sistema
-function showSystemLogs() {
+async function showSystemLogs() {
+    // Verificar proteção de rota
+    const isAuthorized = await protectRoute();
+    if (!isAuthorized) return;
+    
     // Esconder todas as seções
     hideAllSections();
     
@@ -203,6 +268,7 @@ function hideAllSections() {
     locationsSection.style.display = 'none';
     logsSection.style.display = 'none';
     systemLogsSection.style.display = 'none';
+    adminManagementSection.style.display = 'none';
 }
 
 // Função para carregar o conteúdo do dashboard
@@ -263,7 +329,11 @@ function loadUserDetail(userId) {
 }
 
 // Função para mostrar a seção de fantasmas
-function showGhosts() {
+async function showGhosts() {
+    // Verificar proteção de rota
+    const isAuthorized = await protectRoute();
+    if (!isAuthorized) return;
+    
     hideAllSections();
     ghostsSection.style.display = 'block';
     mainNav.style.display = 'block';
@@ -271,11 +341,46 @@ function showGhosts() {
 }
 
 // Função para mostrar a seção de eventos
-function showEvents() {
+async function showEvents() {
+    // Verificar proteção de rota
+    const isAuthorized = await protectRoute();
+    if (!isAuthorized) return;
+    
     hideAllSections();
     eventsSection.style.display = 'block';
     mainNav.style.display = 'block';
     loadEvents();
+}
+
+// Função para mostrar a seção de gerenciamento de administradores
+async function showAdminManagement() {
+    // Verificar proteção de rota
+    const isAuthorized = await protectRoute();
+    if (!isAuthorized) return;
+    
+    // Verificar permissão específica
+    if (!await adminAuth.hasPermission('admin_list')) {
+        showError('Acesso negado. Você não tem permissão para gerenciar administradores.');
+        return;
+    }
+    
+    hideAllSections();
+    adminManagementSection.style.display = 'block';
+    mainNav.style.display = 'block';
+    
+    // Carregar conteúdo de gerenciamento de administradores
+    const adminManagementContent = document.getElementById('admin-management-content');
+    if (adminManagementContent) {
+        initAdminManagement(adminManagementContent, roleManager, adminAuth);
+    }
+    
+    // Adicionar evento de voltar ao dashboard
+    document.getElementById('back-to-dashboard-admins').addEventListener('click', () => {
+        showDashboard();
+    });
+    
+    // Ativar item de navegação
+    activateNavItem('admin-management');
 }
 
 // Função para carregar o conteúdo de fantasmas
@@ -413,59 +518,64 @@ function activateNavItem(sectionId) {
 }
 
 // Função para lidar com a navegação por hash
-function handleHashNavigation() {
+async function handleHashNavigation() {
     const hash = window.location.hash;
     
     switch (hash) {
         case '#dashboard':
-            showDashboard();
+            await showDashboard();
             break;
         case '#users':
-            showUsers();
+            await showUsers();
             break;
         case '#ghosts':
-            showGhosts();
+            await showGhosts();
             break;
         case '#events':
-            showEvents();
+            await showEvents();
             break;
         case '#reports':
-            showReports();
+            await showReports();
             break;
         case '#settings':
-            showSettings();
+            await showSettings();
             break;
         case '#locations':
-            showLocations();
+            await showLocations();
             break;
         case '#logs':
-            showLogs();
+            await showLogs();
             break;
         case '#system-logs':
-            showSystemLogs();
+            await showSystemLogs();
+            break;
+        case '#admin-management':
+            await showAdminManagement();
             break;
         case '':
-            showDashboard();
+            await showDashboard();
             break;
         default:
             // Verificar se é uma rota de detalhes de usuário
             if (hash.startsWith('#user-detail/')) {
                 const userId = hash.split('/')[1];
-                showUserDetail(userId);
+                await showUserDetail(userId);
             } else {
-                showDashboard();
+                await showDashboard();
             }
     }
 }
 
 // Adicionar evento de mudança de hash
-window.addEventListener('hashchange', handleHashNavigation);
+window.addEventListener('hashchange', async () => {
+    await handleHashNavigation();
+});
 
 // Função para lidar com cliques na navegação
 function setupNavigation() {
     const navLinks = document.querySelectorAll('.nav-link');
     navLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
+        link.addEventListener('click', async (e) => {
             e.preventDefault();
             const href = link.getAttribute('href');
             window.location.hash = href;
@@ -501,9 +611,9 @@ function showError(message) {
 }
 
 // Inicializar navegação quando o DOM estiver pronto
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     setupNavigation();
-    handleHashNavigation();
+    await handleHashNavigation();
 });
 
 console.log('Painel Administrativo inicializado');

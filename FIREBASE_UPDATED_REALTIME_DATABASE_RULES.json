@@ -1,0 +1,68 @@
+{
+  "rules": {
+    "users": {
+      ".read": "auth != null && root.child('admins').child(auth.uid).exists()",
+      ".write": "auth != null && root.child('admins').child(auth.uid).exists()",
+      "$uid": {
+        // Usuário pode ler seus próprios dados
+        ".read": "auth != null && (auth.uid == $uid || root.child('admins').child(auth.uid).exists())",
+        // Usuário pode escrever apenas seus próprios dados
+        ".write": "auth != null && (auth.uid == $uid || root.child('admins').child(auth.uid).exists())"
+      }
+    },
+    "gameConfig": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('admins').child(auth.uid).exists()"
+    },
+    "locations": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('admins').child(auth.uid).exists()",
+      "$locationId": {
+        ".read": true
+      }
+    },
+    "admins": {
+      ".read": "auth != null && root.child('admins').child(auth.uid).exists()",
+      ".write": "auth != null && root.child('admins').child(auth.uid).exists()",
+      "$adminId": {
+        ".write": "auth != null && auth.uid == $adminId"
+      }
+    },
+    "auditLogs": {
+      ".read": "auth != null && root.child('admins').child(auth.uid).exists()",
+      ".write": "auth != null && root.child('admins').child(auth.uid).exists()",
+      ".indexOn": "timestamp"
+    },
+    "systemLogs": {
+      ".read": "auth != null && root.child('admins').child(auth.uid).exists()",
+      ".write": "auth != null && root.child('admins').child(auth.uid).exists()"
+    },
+    "rankings": {
+      ".read": "auth != null",
+      ".indexOn": "points",
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "ghosts": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('admins').child(auth.uid).exists()",
+      "$ghostId": {
+        ".read": "auth != null",
+        ".write": "auth != null && root.child('admins').child(auth.uid).exists()"
+      }
+    },
+    "events": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('admins').child(auth.uid).exists()",
+      "$eventId": {
+        ".read": "auth != null",
+        ".write": "auth != null && root.child('admins').child(auth.uid).exists()"
+      }
+    },
+    "unidadesContencao": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('admins').child(auth.uid).exists()"
+    }
+  }
+}

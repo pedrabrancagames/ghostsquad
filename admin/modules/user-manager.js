@@ -20,7 +20,12 @@ export class UserManager {
      * @param {number} limit - Limite de usuários por página
      * @returns {Promise<Object>} - Objeto com usuários e informações de paginação
      */
-    async getAllUsers(page = 1, limit = 20) {
+    async getAllUsers(page = 1, limit = 20, adminAuth = null) {
+        // Verificar permissões antes de obter usuários
+        if (adminAuth && !adminAuth.hasPermission('user_view')) {
+            throw new Error('Permissão negada: visualizar usuários');
+        }
+        
         try {
             // Calcular offset
             const offset = (page - 1) * limit;
@@ -52,9 +57,15 @@ export class UserManager {
     /**
      * Obtém um usuário específico pelo ID
      * @param {string} uid - ID do usuário
+     * @param {Object} adminAuth - Instância do AdminAuthManager para verificação de permissões
      * @returns {Promise<Object|null>} - Dados do usuário ou null se não encontrado
      */
-    async getUserById(uid) {
+    async getUserById(uid, adminAuth = null) {
+        // Verificar permissões antes de obter usuário
+        if (adminAuth && !adminAuth.hasPermission('user_view')) {
+            throw new Error('Permissão negada: visualizar usuário');
+        }
+        
         try {
             const userRef = this.usersRef.child(uid);
             const snapshot = await userRef.once('value');
@@ -75,9 +86,20 @@ export class UserManager {
      * Atualiza os pontos de um usuário
      * @param {string} uid - ID do usuário
      * @param {number} points - Novos pontos
+     * @param {Object} adminAuth - Instância do AdminAuthManager para verificação de permissões
      * @returns {Promise<void>}
      */
-    async updateUserPoints(uid, points) {
+    async updateUserPoints(uid, points, adminAuth) {
+        // Verificar permissões antes de atualizar
+        if (!adminAuth || !adminAuth.hasPermission('user_edit')) {
+            throw new Error('Permissão negada: atualizar pontos do usuário');
+        }
+        
+        // Validar entrada de dados
+        if (typeof points !== 'number' || points < 0) {
+            throw new Error('Pontos inválidos');
+        }
+        
         try {
             const userRef = this.usersRef.child(uid);
             await userRef.update({ points: points });
@@ -91,9 +113,20 @@ export class UserManager {
      * Atualiza as estatísticas de captura de um usuário
      * @param {string} uid - ID do usuário
      * @param {number} captures - Novo número de capturas
+     * @param {Object} adminAuth - Instância do AdminAuthManager para verificação de permissões
      * @returns {Promise<void>}
      */
-    async updateUserCaptures(uid, captures) {
+    async updateUserCaptures(uid, captures, adminAuth) {
+        // Verificar permissões antes de atualizar
+        if (!adminAuth || !adminAuth.hasPermission('user_edit')) {
+            throw new Error('Permissão negada: atualizar capturas do usuário');
+        }
+        
+        // Validar entrada de dados
+        if (typeof captures !== 'number' || captures < 0) {
+            throw new Error('Número de capturas inválido');
+        }
+        
         try {
             const userRef = this.usersRef.child(uid);
             await userRef.update({ captures: captures });
@@ -107,9 +140,15 @@ export class UserManager {
      * Bane um usuário
      * @param {string} uid - ID do usuário
      * @param {string} reason - Motivo do banimento
+     * @param {Object} adminAuth - Instância do AdminAuthManager para verificação de permissões
      * @returns {Promise<void>}
      */
-    async banUser(uid, reason = '') {
+    async banUser(uid, reason = '', adminAuth) {
+        // Verificar permissões antes de banir
+        if (!adminAuth || !adminAuth.hasPermission('user_ban')) {
+            throw new Error('Permissão negada: banir usuário');
+        }
+        
         try {
             const userRef = this.usersRef.child(uid);
             await userRef.update({ 
@@ -126,9 +165,15 @@ export class UserManager {
     /**
      * Desbane um usuário
      * @param {string} uid - ID do usuário
+     * @param {Object} adminAuth - Instância do AdminAuthManager para verificação de permissões
      * @returns {Promise<void>}
      */
-    async unbanUser(uid) {
+    async unbanUser(uid, adminAuth) {
+        // Verificar permissões antes de desbanir
+        if (!adminAuth || !adminAuth.hasPermission('user_ban')) {
+            throw new Error('Permissão negada: desbanir usuário');
+        }
+        
         try {
             const userRef = this.usersRef.child(uid);
             await userRef.update({ 
@@ -146,9 +191,15 @@ export class UserManager {
      * Busca usuários por critérios
      * @param {string} query - Termo de busca
      * @param {string} field - Campo para buscar (displayName, email)
+     * @param {Object} adminAuth - Instância do AdminAuthManager para verificação de permissões
      * @returns {Promise<Array>} - Lista de usuários que correspondem à busca
      */
-    async searchUsers(query, field = 'displayName') {
+    async searchUsers(query, field = 'displayName', adminAuth = null) {
+        // Verificar permissões antes de buscar usuários
+        if (adminAuth && !adminAuth.hasPermission('user_view')) {
+            throw new Error('Permissão negada: pesquisar usuários');
+        }
+        
         try {
             const snapshot = await this.usersRef.once('value');
             const allUsers = snapshot.val() || {};
@@ -176,9 +227,15 @@ export class UserManager {
     /**
      * Exporta dados dos usuários
      * @param {string} format - Formato de exportação (csv, json)
+     * @param {Object} adminAuth - Instância do AdminAuthManager para verificação de permissões
      * @returns {Promise<string>} - Dados exportados como string
      */
-    async exportUserData(format = 'json') {
+    async exportUserData(format = 'json', adminAuth) {
+        // Verificar permissões antes de exportar dados
+        if (!adminAuth || !adminAuth.hasPermission('user_export')) {
+            throw new Error('Permissão negada: exportar dados de usuários');
+        }
+        
         try {
             const snapshot = await this.usersRef.once('value');
             const users = snapshot.val() || {};
@@ -218,9 +275,15 @@ export class UserManager {
     /**
      * Exclui um usuário permanentemente
      * @param {string} uid - ID do usuário
+     * @param {Object} adminAuth - Instância do AdminAuthManager para verificação de permissões
      * @returns {Promise<void>}
      */
-    async deleteUser(uid) {
+    async deleteUser(uid, adminAuth) {
+        // Verificar permissões antes de excluir
+        if (!adminAuth || !adminAuth.hasPermission('user_delete')) {
+            throw new Error('Permissão negada: excluir usuário');
+        }
+        
         try {
             const userRef = this.usersRef.child(uid);
             await userRef.remove();
@@ -233,11 +296,17 @@ export class UserManager {
     /**
      * Obtém estatísticas de um usuário
      * @param {string} uid - ID do usuário
+     * @param {Object} adminAuth - Instância do AdminAuthManager para verificação de permissões
      * @returns {Promise<Object>} - Estatísticas do usuário
      */
-    async getUserStats(uid) {
+    async getUserStats(uid, adminAuth = null) {
+        // Verificar permissões antes de obter estatísticas
+        if (adminAuth && !adminAuth.hasPermission('user_view')) {
+            throw new Error('Permissão negada: visualizar estatísticas do usuário');
+        }
+        
         try {
-            const user = await this.getUserById(uid);
+            const user = await this.getUserById(uid, adminAuth);
             if (!user) {
                 throw new Error('Usuário não encontrado');
             }

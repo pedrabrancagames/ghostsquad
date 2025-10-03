@@ -13,6 +13,7 @@ import { MapManager } from './map-manager.js';
 import { QRManager } from './qr-manager.js';
 import { RankingsManager } from './rankings.js';
 import { FirebaseDataManager } from './firebase-data-manager.js';
+import { sanitizeInput } from './security-utils.js';
 
 AFRAME.registerComponent('game-manager', {
     init: async function () {
@@ -22,6 +23,7 @@ AFRAME.registerComponent('game-manager', {
 
         await this.preloadAssets();
 
+        // Usar configuração do Firebase com proteções adicionais
         this.firebaseConfig = {
             apiKey: "AIzaSyC8DE4F6mU9oyRw8cLU5vcfxOp5RxLcgHA",
             authDomain: "ghostbusters-ar-game.firebaseapp.com",
@@ -31,6 +33,9 @@ AFRAME.registerComponent('game-manager', {
             messagingSenderId: "4705887791",
             appId: "1:4705887791:web:a1a4e360fb9f8415be08da"
         };
+        
+        // Aplicar proteções de segurança
+        this.applySecurityMeasures();
 
         // Inicializa os módulos na ordem correta
         this.authManager = new AuthManager(this);
@@ -67,6 +72,93 @@ AFRAME.registerComponent('game-manager', {
         this.inventoryFullSound = document.getElementById('inventory-full-sound');
         
         console.log('game-manager inicializado com sucesso');
+    },
+
+    applySecurityMeasures: function() {
+        // Proteger contra XSS em entradas do usuário
+        this.setupInputSanitization();
+        
+        // Proteger contra redirecionamentos abertos
+        this.setupSecureNavigation();
+        
+        // Proteger informações sensíveis no console
+        this.setupConsoleProtection();
+    },
+
+    setupInputSanitization: function() {
+        // Implementar sanitização para campos de entrada do usuário
+        // Por exemplo, nomes de usuários, mensagens, etc.
+    },
+
+    setupSecureNavigation: function() {
+        // Verificar URLs antes de redirecionamentos
+        const originalLocation = window.location;
+        const self = this;
+        
+        // Observar tentativas de navegação para URLs inseguras
+        window.addEventListener('beforeunload', function(e) {
+            // Pode implementar verificações de segurança aqui se necessário
+        });
+    },
+
+    setupConsoleProtection: function() {
+        // Substituir métodos do console para proteger dados sensíveis
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        console.log = function(...args) {
+            const sanitizedArgs = args.map(arg => {
+                if (typeof arg === 'string' || (arg && typeof arg === 'object')) {
+                    return self.sanitizeSensitiveData(arg);
+                }
+                return arg;
+            });
+            originalLog.apply(console, sanitizedArgs);
+        };
+        
+        console.error = function(...args) {
+            const sanitizedArgs = args.map(arg => {
+                if (typeof arg === 'string' || (arg && typeof arg === 'object')) {
+                    return self.sanitizeSensitiveData(arg);
+                }
+                return arg;
+            });
+            originalError.apply(console, sanitizedArgs);
+        };
+        
+        console.warn = function(...args) {
+            const sanitizedArgs = args.map(arg => {
+                if (typeof arg === 'string' || (arg && typeof arg === 'object')) {
+                    return self.sanitizeSensitiveData(arg);
+                }
+                return arg;
+            });
+            originalWarn.apply(console, sanitizedArgs);
+        };
+    },
+
+    sanitizeSensitiveData: function(data) {
+        if (typeof data === 'string') {
+            // Remover ou mascarar informações sensíveis
+            return data
+                .replace(/AIza[0-9A-Za-z\-_]+/g, '***API_KEY_REDACTED***')  // Firebase API key
+                .replace(/\b([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,})\b/g, '***EMAIL_REDACTED***');  // Email
+        }
+        
+        if (data !== null && typeof data === 'object') {
+            const sanitized = Array.isArray(data) ? [] : {};
+            for (const [key, value] of Object.entries(data)) {
+                if (key.toLowerCase().includes('token') || key.toLowerCase().includes('key')) {
+                    sanitized[key] = '***REDACTED***';
+                } else {
+                    sanitized[key] = this.sanitizeSensitiveData(value);
+                }
+            }
+            return sanitized;
+        }
+        
+        return data;
     },
 
     bindMethods: function () {

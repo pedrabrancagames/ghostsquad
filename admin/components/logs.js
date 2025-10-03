@@ -8,8 +8,9 @@
  * Inicializa o componente de logs
  * @param {HTMLElement} element - Elemento DOM onde os logs serão renderizados
  * @param {Object} auditManager - Instância do AuditManager
+ * @param {Object} adminAuth - Instância do AdminAuthManager
  */
-export async function initLogs(element, auditManager) {
+export async function initLogs(element, auditManager, adminAuth) {
     if (!element || !auditManager) {
         console.error('Elemento ou AuditManager não fornecidos para o componente de logs');
         return;
@@ -24,16 +25,16 @@ export async function initLogs(element, auditManager) {
         `;
         
         // Carregar logs de auditoria
-        const auditLogs = await auditManager.getAuditLogs({}, 100);
+        const auditLogs = await auditManager.getAuditLogs({}, 100, adminAuth);
         
         // Carregar administradores ativos
-        const activeAdmins = await auditManager.getActiveAdmins();
+        const activeAdmins = await auditManager.getActiveAdmins(30, adminAuth);
         
         // Renderizar interface
         renderLogs(element, auditLogs, activeAdmins);
         
         // Configurar eventos
-        setupEventListeners(element, auditManager, auditLogs, activeAdmins);
+        setupEventListeners(element, auditManager, adminAuth, auditLogs, activeAdmins);
     } catch (error) {
         console.error('Erro ao carregar logs:', error);
         element.innerHTML = `
@@ -328,7 +329,7 @@ function setupEventListeners(element, auditManager, auditLogs, activeAdmins) {
                 }
                 
                 // Carregar logs filtrados
-                const filteredLogs = await auditManager.getAuditLogs(filters, 100);
+                const filteredLogs = await auditManager.getAuditLogs(filters, 100, adminAuth);
                 
                 // Atualizar tabela
                 if (tableBody) {

@@ -89,7 +89,7 @@ export function initEvents(container, eventManager) {
         try {
             if (isEditing) {
                 // Atualizar evento existente
-                await eventManager.updateEvent(editingEventId, eventData);
+                await eventManager.updateEvent(editingEventId, eventData, adminAuth);
                 feedbackElement.textContent = 'Evento atualizado com sucesso!';
                 // Remover atributo de edição
                 saveEventBtn.removeAttribute('data-editing-id');
@@ -99,7 +99,7 @@ export function initEvents(container, eventManager) {
                 cancelEditBtn.style.display = 'none';
             } else {
                 // Criar novo evento
-                await eventManager.addEvent(eventData);
+                await eventManager.addEvent(eventData, adminAuth);
                 feedbackElement.textContent = 'Evento salvo com sucesso!';
                 addEventForm.reset();
             }
@@ -172,7 +172,7 @@ export function initEvents(container, eventManager) {
             const eventId = e.target.getAttribute('data-event-id');
             if (confirm('Tem certeza que deseja excluir este evento? Esta ação não pode ser desfeita.')) {
                 try {
-                    await eventManager.deleteEvent(eventId);
+                    await eventManager.deleteEvent(eventId, adminAuth);
                     // A lista será atualizada automaticamente pelo listener do getEvents
                 } catch (error) {
                     console.error('Erro ao deletar evento:', error);
