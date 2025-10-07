@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Ghost Squad</title>
+    <meta name="description" content="Capture fantasmas que invadiram o seu mundo.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" href="https://pedrabrancagames.github.io/gemini-novo/favicon.ico" type="image/x-icon">
+
+    <!-- A-Frame & Libraries -->
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+    <!-- Import Map for Three.js modules -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/"
+        }
+      }
+    </script>
+
+    <!-- Project Files -->
+    <link rel="stylesheet" href="style.css">
+ 
+</head>
+
+<body>
+    <!-- A-Frame Scene -->
+    <a-scene id="ar-scene" game-manager
+        webxr="requiredFeatures: hit-test, local-floor; optionalFeatures: dom-overlay; overlayElement: #ui-container;"
+        vr-mode-ui="enabled: false"
+        renderer="logarithmicDepthBuffer: true; colorManagement: true; antialias: true; physicallyCorrectLights: true;"
+        background="color: transparent;">
+        <a-assets>
+            <audio id="proton-beam-sound" src="assets/audio/proton-beam.mp3" preload="auto"></audio>
+            <audio id="ghost-capture-sound" src="assets/audio/ghost-capture.mp3" preload="auto"></audio>
+            <audio id="inventory-full-sound" src="assets/audio/inventory_full.mp3" preload="auto"></audio>
+        </a-assets>
+        <a-light type="ambient" color="#FFF" intensity="0.7"></a-light>
+        <a-light type="directional" color="#FFF" intensity="0.8" position="-1 2 1"></a-light>
+        <a-camera fov="80">
+            <!-- Proton Beam antigo removido - agora usando partículas -->
+        </a-camera>
+        <a-entity id="reticle" visible="false"
+            geometry="primitive: ring; radius-inner: 0.04; radius-outer: 0.06;"
+            material="color: #92F428; shader: flat;"></a-entity>
+        
+        <!-- Entidade de fantasma dinâmica que será populada via código -->
+        <a-entity id="dynamic-ghost" visible="false">
+            <a-entity class="rotator" animation__rotation="property: rotation; to: 0 -360 0; dur: 8000; loop: true; easing: linear; enabled: false;">
+                <a-entity class="model"
+                    animation__bob="property: position; from: 1 0.3 0; to: 1 0.8 0; dur: 3000; dir: alternate; loop: true; easing: easeInOutQuad; enabled: false;">
+                </a-entity>
+            </a-entity>
+        </a-entity>
+        
+        <a-entity id="ecto-1" visible="false" geometry="primitive: box; width: 1.5; height: 0.8; depth: 3.5" material="color: #FFFFFF;"></a-entity>
+    </a-scene>
+
+    <!-- UI Container -->
+    <div id="ui-container">
+        <div id="login-screen" class="ui-screen ui-element">
+            <img id="logo" src="assets/images/logo.png" alt="Ghost Squad Logo">
+            <p id="loading-info">Carregando recursos...</p>
+            <div id="loading-bar-container">
+                <div id="loading-bar"></div>
+            </div>
+            <div id="auth-buttons-container" class="hidden">
+                <button id="google-login-button" class="auth-button ui-element">Login com Google</button>
+
+                <button id="anonymous-login-button" class="auth-button ui-element">Jogar como Visitante</button>
+            </div>
+            <div id="admin-link-container" class="hidden">
+                <a href="admin/" id="admin-link" class="text-button ui-element">Painel Administrativo</a>
+            </div>
+            <div id="version-info">v1.0.0</div>
+        </div>
+
+
+ 
+        <div id="location-screen" class="ui-screen ui-element hidden">
+            <h2>Selecione a Área de Caça</h2>
+            <p id="location-info-text">Escolha um local para começar a patrulha.</p>
+            <div id="location-buttons-container">
+                <!-- Localizações serão carregadas dinamicamente do Firebase -->
+            </div>
+            <button id="enter-button" class="action-button ui-element" disabled>Iniciar Caça</button>
+        </div>
+
+        <div id="game-ui" class="hidden">
+            <img id="game-logo" src="assets/images/logo.png" alt="Logo">
+            <div id="inventory-icon-container" class="ui-element">
+                <img id="inventory-icon" src="assets/images/ghost_trap.png" alt="Inventário">
+                <div id="inventory-badge">0/5</div>
+            </div>
+            <img id="proton-pack-icon" class="ui-element" src="assets/images/proton_pack.png" alt="Proton Pack">
+            <div id="proton-pack-progress-bar" class="ui-element"><div id="proton-pack-progress-fill"></div></div>
+            <div id="minimap" class="ui-element"></div>
+            <div id="distance-info"></div>
+        </div>
+
+        <div id="inventory-modal" class="ui-screen ui-element hidden">
+            <div id="inventory-content">
+                <div id="inventory-header">
+                    <h2>Inventário de Fantasmas</h2>
+                    <button id="close-inventory-button" class="ui-element">&times;</button>
+                </div>
+                <ul id="ghost-list"></ul>
+                <button id="deposit-button" class="action-button ui-element">Depositar Fantasmas</button>
+            </div>
+        </div>
+
+        <div id="qr-scanner-screen" class="ui-screen ui-element hidden">
+            <button id="close-scanner-button" class="ui-element">&times;</button>
+            <div id="qr-reader"></div>
+        </div>
+
+        <!-- Nova Janela de Notificação -->
+        <div id="notification-modal" class="ui-screen ui-element hidden">
+            <div id="notification-content">
+                <p id="notification-message"></p>
+                <button id="notification-close-button" class="action-button ui-element">OK</button>
+            </div>
+        </div>
+
+        <!-- Tela de Perfil -->
+        <div id="profile-modal" class="ui-screen ui-element hidden">
+            <div id="profile-content">
+                <div id="profile-header">
+                    <h2>Meu Perfil</h2>
+                    <button id="close-profile-button" class="ui-element">&times;</button>
+                </div>
+                <div id="profile-info">
+                    <div class="profile-field">
+                        <label for="profile-name">Nome:</label>
+                        <input type="text" id="profile-name" placeholder="Seu nome">
+                    </div>
+
+                </div>
+                <div id="auth-options" class="hidden">
+                    <p>Você está logado como visitante. Para salvar seu progresso, cadastre-se:</p>
+                    <button id="profile-google-login-button" class="auth-button ui-element">Cadastrar com Google</button>
+
+                </div>
+                <div id="profile-actions">
+                    <button id="save-profile-button" class="action-button ui-element">Salvar</button>
+                    <button id="logout-button" class="action-button ui-element">Sair</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sistemas de Efeitos Visuais -->
+    <script src="visual-effects.js"></script>
+    <script src="animations.js"></script>
+    <script src="notifications.js"></script>
+    <script src="test-debug.js"></script>
+    <script src="ar-debug.js"></script>
+    
+    <script type="module" src="main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,56 @@
+{
+  "name": "ghostbusters---mais-fantasmas",
+  "version": "1.0.0",
+  "main": "main.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pedrabrancagames/qwen.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pedrabrancagames/qwen/issues"
+  },
+  "homepage": "https://github.com/pedrabrancagames/qwen#readme",
+  "description": "",
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/preset-env": "^7.25.3",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "collectCoverageFrom": [
+      "*.js",
+      "!main.js",
+      "!visual-effects.js",
+      "!animations.js",
+      "!notifications.js"
+    ],
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    },
+    "transformIgnorePatterns": [
+      "/node_modules/(?!html5-qrcode)"
+    ],
+    "moduleNameMapper": {
+      "html5-qrcode": "<rootDir>/tests/__mocks__/html5-qrcode.js"
+    },
+    "setupFilesAfterEnv": [
+      "<rootDir>/tests/setupTests.js"
+    ]
+  },
+  "dependencies": {
+    "@testsprite/testsprite-mcp": "^0.0.13"
+  }
+}
