@@ -371,6 +371,12 @@ AFRAME.registerComponent('game-manager', {
         const userRef = ref(this.database, 'users/' + this.currentUser.uid);
         update(userRef, { points: userStats.points, captures: userStats.captures, inventory: this.gameState.getInventory(), ecto1Unlocked: userStats.ecto1Unlocked });
 
+        // Atualizar o ranking após capturar um fantasma
+        if (this.rankingsManager) {
+            console.log('Atualizando ranking após captura de fantasma...');
+            this.rankingsManager.loadRankings();
+        }
+
         this.generateGhost();
     },
 

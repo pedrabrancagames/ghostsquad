@@ -510,7 +510,7 @@ export class UIManager {
         } else {
             inventory.forEach(ghost => {
                 const li = document.createElement('li');
-                li.textContent = `${ghost.type} (Pontos: ${ghost.points}) - ID: ${ghost.id}`;
+                li.textContent = `${ghost.type} (Pontos: ${ghost.points})`;
                 this.ghostList.appendChild(li);
             });
             if (this.depositButton) {
