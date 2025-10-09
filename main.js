@@ -23,13 +23,13 @@ AFRAME.registerComponent('game-manager', {
         await this.preloadAssets();
 
         this.firebaseConfig = {
-            apiKey: "AIzaSyC8DE4F6mU9oyRw8cLU5vcfxOp5RxLcgHA",
-            authDomain: "ghostbusters-ar-game.firebaseapp.com",
-            databaseURL: "https://ghostbusters-ar-game-default-rtdb.firebaseio.com",
-            projectId: "ghostbusters-ar-game",
-            storageBucket: "ghostbusters-ar-game.appspot.com",
-            messagingSenderId: "4705887791",
-            appId: "1:4705887791:web:a1a4e360fb9f8415be08da"
+            apiKey: "AIzaSyAHVatoCWMcCWLzJfH993OOVRS04S3f3oI",
+            authDomain: "ghostfire-bbb16.firebaseapp.com",
+            databaseURL: "https://ghostfire-bbb16-default-rtdb.firebaseio.com",
+            projectId: "ghostfire-bbb16",
+            storageBucket: "ghostfire-bbb16.appspot.com",
+            messagingSenderId: "149492792943",
+            appId: "1:149492792943:web:9db199904a4daf7c0e979a"
         };
 
         // Inicializa os módulos na ordem correta
