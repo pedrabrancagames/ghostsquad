@@ -428,7 +428,7 @@ body {
 
 #proton-pack-icon {
     position: fixed;
-    bottom: 0px;
+    bottom: -20px; /* Movido 20px para baixo (0px - 20px) */
     right: 0px;
     width: 140px; /* Aumentado */
     z-index: 15;
