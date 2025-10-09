@@ -82,7 +82,8 @@ export class AuthManager {
                     captures: 0, 
                     level: 1, 
                     inventory: [], 
-                    ecto1Unlocked: false 
+                    ecto1Unlocked: false,
+                    createdAt: new Date().toISOString()
                 };
                 return set(userRef, newUserStats).then(() => {
                     this.gameManager.userStats = newUserStats;
