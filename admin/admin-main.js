@@ -18,9 +18,8 @@ import { EventManager } from './modules/event-manager.js';
 import { initGhosts } from './components/ghosts.js';
 import { initEvents } from './components/events.js';
 
-// Inicializando o Firebase
-const firebaseConfig = window.firebaseConfig;
-firebase.initializeApp(firebaseConfig);
+// O Firebase foi inicializado no firebase-config.js
+// Pegando a instância do Firebase já inicializada
 
 // Referências aos elementos do DOM
 const loginSection = document.getElementById('login-section');
