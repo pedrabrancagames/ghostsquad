@@ -88,6 +88,20 @@ export class AuthManager {
                     this.gameManager.userStats = newUserStats;
                     // Atualizar o inventário do gameState com os dados do banco
                     this.gameManager.gameState.inventory = [];
+                    
+                    // Adicionar o novo usuário ao ranking imediatamente
+                    if (this.gameManager.database) {
+                        const rankRef = ref(this.gameManager.database, 'rankings/' + user.uid);
+                        set(rankRef, {
+                            displayName: displayName,
+                            points: 0,
+                            captures: 0
+                        }).then(() => {
+                            console.log('Novo usuário adicionado ao ranking:', user.uid);
+                        }).catch((error) => {
+                            console.error('Erro ao adicionar novo usuário ao ranking:', error);
+                        });
+                    }
                 });
             }
         });

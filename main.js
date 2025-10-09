@@ -126,24 +126,8 @@ AFRAME.registerComponent('game-manager', {
         const userRef = ref(this.database, 'users/' + this.currentUser.uid);
         update(userRef, { inventory: this.gameState.getInventory() });
 
-        // Obter o nome correto do usuário para o ranking
-        let displayName = 'Caça-Fantasma';
-        if (this.userStats && this.userStats.displayName && this.userStats.displayName.trim() !== '') {
-            displayName = this.userStats.displayName;
-        } else if (this.currentUser) {
-            if (this.currentUser.displayName && this.currentUser.displayName.trim() !== '') {
-                displayName = this.currentUser.displayName;
-            } else if (this.currentUser.email) {
-                displayName = this.currentUser.email.split('@')[0];
-            }
-        }
-
-        const rankRef = ref(this.database, 'rankings/' + this.currentUser.uid);
-        set(rankRef, {
-            displayName: displayName,
-            points: this.gameState.userStats.points || 0,
-            captures: this.gameState.userStats.captures || 0
-        });
+        // Atualizar o ranking após depositar fantasmas
+        this.updateRankings();
 
         this.updateInventoryUI();
         this.generateGhost();
@@ -372,12 +356,41 @@ AFRAME.registerComponent('game-manager', {
         update(userRef, { points: userStats.points, captures: userStats.captures, inventory: this.gameState.getInventory(), ecto1Unlocked: userStats.ecto1Unlocked });
 
         // Atualizar o ranking após capturar um fantasma
+        this.updateRankings();
+
+        this.generateGhost();
+    },
+
+    updateRankings: function () {
+        // Obter o nome correto do usuário para o ranking
+        let displayName = 'Caça-Fantasma';
+        if (this.userStats && this.userStats.displayName && this.userStats.displayName.trim() !== '') {
+            displayName = this.userStats.displayName;
+        } else if (this.currentUser) {
+            if (this.currentUser.displayName && this.currentUser.displayName.trim() !== '') {
+                displayName = this.currentUser.displayName;
+            } else if (this.currentUser.email) {
+                displayName = this.currentUser.email.split('@')[0];
+            }
+        }
+
+        // Atualizar o ranking no caminho 'rankings/{uid}'
+        const rankRef = ref(this.database, 'rankings/' + this.currentUser.uid);
+        set(rankRef, {
+            displayName: displayName,
+            points: this.gameState.userStats.points || 0,
+            captures: this.gameState.userStats.captures || 0
+        }).then(() => {
+            console.log('Ranking atualizado para o usuário:', this.currentUser.uid);
+        }).catch((error) => {
+            console.error('Erro ao atualizar ranking:', error);
+        });
+
+        // Atualizar o ranking após capturar um fantasma
         if (this.rankingsManager) {
             console.log('Atualizando ranking após captura de fantasma...');
             this.rankingsManager.loadRankings();
         }
-
-        this.generateGhost();
     },
 
 
